@@ -33,12 +33,21 @@ const addFirm = async (req, res) => {
     });
 
     const savedFirm = await firm.save();
+    const FirmId = savedFirm._id;
 
     vendor.firm.push(savedFirm._id);
     await vendor.save();
 
+    if (vendor.firm.length > 0) {
+      return res.status(400).json({
+        message: "Vendor already has a firm associated",
+        firmId: vendor.firm[0], // Return the first firm ID if it exists
+      });
+    }
+
     return res.status(201).json({
       message: "Firm added successfully",
+      firmId: FirmId,
       firm: {
         firmName: firm.firmName,
         area: firm.area,

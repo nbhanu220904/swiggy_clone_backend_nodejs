@@ -53,9 +53,12 @@ const vendorLogin = async (req, res) => {
       secretKey, // Secret Key for JWT
       { expiresIn: "1h" } //Token Expiry
     );
+
+    const vendorId = vendor._id;
     res.status(200).json({
       message: "Vendor logged in successfully",
       token,
+      vendorId,
       vendor: {
         username: vendor.username,
         email: vendor.email,
@@ -84,15 +87,29 @@ const getAllVendors = async (req, res) => {
 
 const getVendorById = async (req, res) => {
   const vendorId = req.params.id;
+
+  if (!vendorId || vendorId === "undefined") {
+    return res
+      .status(400)
+      .json({ message: "Vendor ID is required in the URL" });
+  }
+
   try {
     const vendor = await Vendor.findById(vendorId).populate("firm");
+
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
-    res.status(200).json({ vendor });
+
+    const vendorFirmId =
+      Array.isArray(vendor.firm) && vendor.firm.length > 0
+        ? vendor.firm[0]._id
+        : null;
+
+    return res.status(200).json({ vendorId, vendorFirmId });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
     console.error("Error fetching vendor by ID:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

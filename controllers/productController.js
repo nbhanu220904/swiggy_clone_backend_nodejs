@@ -17,7 +17,8 @@ const upload = multer({ storage });
 const addProduct = async (req, res) => {
   try {
     const { productName, price, category, bestSeller, description } = req.body;
-    const image = req.file ? req.file.path : null;
+    const image = req.file ? req.file.filename : undefined;
+
     const firmId = req.params.firmId;
     const firm = await Firm.findById(firmId);
     // console.log("Firm found:", firm);
@@ -88,7 +89,7 @@ const deleteProductById = async (req, res) => {
 };
 
 module.exports = {
-  addProduct: [upload.single("image"), addProduct],
+  addProduct: [upload.single("productImage"), addProduct],
   getProductByFirm,
   deleteProductById,
 };
