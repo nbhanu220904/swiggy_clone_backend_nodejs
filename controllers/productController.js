@@ -62,11 +62,11 @@ const getProductByFirm = async (req, res) => {
       return res.status(404).json({ message: "Firm not found" });
     }
 
-    const restaurantName = firm.firmName;
+    const firmName = firm.firmName;
     const products = await Product.find({ firm: firmId });
     res.status(200).json({
       message: "Products retrieved successfully",
-      restaurantName,
+      firmName,
       products,
     });
   } catch (error) {
